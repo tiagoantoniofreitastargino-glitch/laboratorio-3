@@ -2,6 +2,7 @@ package filmnow;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -31,7 +32,11 @@ public class MainFilmNow {
         String escolha = "";
         while (true) {
             escolha = menu(scanner);
-            comando(escolha, fn, scanner);
+            try {
+                comando(escolha, fn, scanner);
+            } catch (FilmNowException e) {
+                System.out.println(e.getMessage());
+            }
         }
 
     }
@@ -44,15 +49,25 @@ public class MainFilmNow {
      */
 
     private static String menu(Scanner scanner) {
+        exibeMenu();
+        return scanner.next().toUpperCase();
+    }
+
+    /**
+     * Exibe o menu de opções.
+     */
+    static void exibeMenu() {
         System.out.println(
                 "\n---\nMENU\n" +
                         "(A)Adicionar filme\n" +
                         "(M)Mostrar todos\n" +
                         "(D)Detalhar filme\n" +
+                        "(H)Atribuir filme à hot list\n" +
+                        "(R)Remover filme da hot list\n" +
+                        "(L)Listar hot list\n" +
                         "(S)air\n" +
                         "\n" +
                         "Opção> ");
-        return scanner.next().toUpperCase();
     }
 
     /**
@@ -62,7 +77,7 @@ public class MainFilmNow {
      * @param fn  O sistema FilmNow que estamos manipulando.
      * @param scanner Objeto scanner para o caso do comando precisar de mais input.
      */
-    private static void comando(String opcao, FilmNow fn, Scanner scanner) {
+    private static void comando(String opcao, FilmNow fn, Scanner scanner) throws FilmNowException {
         switch (opcao) {
             case "A":
                 adicionaFilme(fn, scanner);
@@ -72,6 +87,15 @@ public class MainFilmNow {
                 break;
             case "D":
                 detalharFilme(fn, scanner);
+                break;
+            case "H":
+                atribuiHot(fn, scanner);
+                break;
+            case "R":
+                removeHot(fn, scanner);
+                break;
+            case "L":
+                mostrarHotList(fn);
                 break;
             case "S":
                 sai();
@@ -102,11 +126,50 @@ public class MainFilmNow {
      * @param fn O sistema FilmNow a ser manipulado.
      * @param scanner Scanner para capturar qual contato.
      */
-    private static void detalharFilme(FilmNow fn, Scanner scanner) {
+    private static void detalharFilme(FilmNow fn, Scanner scanner) throws FilmNowException {
         System.out.print("\nQual filme> ");
         int posicao = scanner.nextInt();
-        String filme = fn.getFilme(posicao);
-        System.out.println("Dados do filme:\n" + filme);
+        System.out.println("Dados do filme:\n" + fn.detalhaFilme(posicao));
+    }
+
+    /**
+     * Coloca um filme na hot list.
+     *
+     * @param fn O sistema FilmNow a ser manipulado.
+     * @param scanner Scanner para capturar as posições.
+     */
+    private static void atribuiHot(FilmNow fn, Scanner scanner) throws FilmNowException {
+        System.out.print("\nPosição do filme> ");
+        int posicaoFilme = scanner.nextInt();
+        System.out.print("\nPosição na hot list> ");
+        int posicaoHot = scanner.nextInt();
+        fn.atribuiHot(posicaoFilme, posicaoHot);
+    }
+
+    /**
+     * Remove um filme da hot list.
+     *
+     * @param fn O sistema FilmNow a ser manipulado.
+     * @param scanner Scanner para capturar a posição.
+     */
+    private static void removeHot(FilmNow fn, Scanner scanner) throws FilmNowException {
+        System.out.print("\nPosição na hot list> ");
+        fn.removeHot(scanner.nextInt());
+    }
+
+    /**
+     * Imprime a hot list.
+     *
+     * @param fn O sistema FilmNow a ser manipulado.
+     */
+    private static void mostrarHotList(FilmNow fn) {
+        List<String> hot = fn.listaHotList();
+        if (hot.isEmpty()) {
+            System.out.println("Hot list vazia.");
+        }
+        for (String linha : hot) {
+            System.out.println(linha);
+        }
     }
 
     /**
@@ -126,7 +189,7 @@ public class MainFilmNow {
      * @param fn O sistema FilmNow a ser manipulado.
      * @param scanner Scanner para pedir informações do contato.
      */
-    private static void adicionaFilme(FilmNow fn, Scanner scanner) {
+    private static void adicionaFilme(FilmNow fn, Scanner scanner) throws FilmNowException {
         System.out.print("\nPosição no sistema> ");
         int posicao = scanner.nextInt();
         System.out.print("\nNome> ");
@@ -135,7 +198,7 @@ public class MainFilmNow {
         String ano = scanner.next();
         System.out.print("\nLocal> ");
         String local = scanner.next();
-        fn.cadastraFilme(posicao, nome, ano, local);
+        fn.adicionaFilme(posicao, nome, ano, local);
     }
 
     /**
