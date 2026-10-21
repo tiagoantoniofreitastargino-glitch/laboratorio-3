@@ -210,8 +210,6 @@ public class MainFilmNow {
     }
 
     /**
-     * Lê carga de filmes de um arquivo csv.
-     *
      * @param arquivoFilmes O caminho para o arquivo.
      * @param fn O sistema FilmNow a ser populado com os dados.
      * @throws IOException Caso o arquivo não exista ou não possa ser lido.
