@@ -205,7 +205,7 @@ public class MainFilmNow {
      * Sai da aplicação.
      */
     private static void sai() {
-        System.out.println("\nVlw flw o/");
+        System.out.println("\nTchauy o/");
         System.exit(0);
     }
 
